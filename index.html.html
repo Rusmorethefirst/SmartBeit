@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartBeit – Deliver Anything</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1A7A4A;--green-light:#D6F0E2;--green-mid:#26A96A;
+  --orange:#F5832A;--orange-light:#FEF0E6;
+  --dark:#0F1C14;--text:#1a1a1a;--muted:#6b7280;--border:#e5e7eb;
+  --bg:#F7F9F7;--white:#fff;
+  --radius:14px;--radius-sm:8px;
+  --shadow:0 2px 16px rgba(0,0,0,0.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 2rem}
+.nav-inner{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:'Sora',sans-serif;font-weight:800;font-size:1.4rem;color:var(--green)}
+.logo span{color:var(--orange)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:.9rem;font-weight:500}
+.nav-links a:hover{color:var(--green)}
+.nav-btn{background:var(--green);color:#fff;border:none;padding:.5rem 1.3rem;border-radius:50px;cursor:pointer;font-size:.9rem;font-weight:600;font-family:inherit}
+.cart-btn{background:var(--orange);color:#fff;border:none;padding:.5rem 1.2rem;border-radius:50px;cursor:pointer;font-size:.9rem;font-weight:600;font-family:inherit;display:none;gap:6px;align-items:center}
+.cart-count{background:#fff;color:var(--orange);border-radius:50%;width:20px;height:20px;font-size:.75rem;display:flex;align-items:center;justify-content:center;font-weight:700}
+
+/* SCREENS */
+.screen{display:none;min-height:calc(100vh - 64px)}
+.screen.active{display:block}
+
+/* HOME */
+#home{background:linear-gradient(135deg,var(--dark) 0%,#1a3d25 60%,#0d2e1b 100%);min-height:calc(100vh - 64px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:3rem 1rem;position:relative;overflow:hidden}
+#home::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2326A96A' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-badge{background:rgba(38,169,106,0.2);color:#7ae5b0;border:1px solid rgba(38,169,106,0.3);padding:.35rem 1rem;border-radius:50px;font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-bottom:1.5rem;display:inline-block}
+#home h1{font-family:'Sora',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:1rem;max-width:700px}
+#home h1 span{color:#26A96A}
+#home p{color:rgba(255,255,255,0.65);font-size:1.05rem;max-width:480px;margin-bottom:2.5rem;line-height:1.7}
+.hero-btn{background:var(--orange);color:#fff;border:none;padding:1rem 2.5rem;border-radius:50px;font-size:1.05rem;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;letter-spacing:.02em;transition:transform .15s,box-shadow .15s}
+.hero-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(245,131,42,0.4)}
+.hero-stats{display:flex;gap:3rem;margin-top:3rem;color:rgba(255,255,255,.6);font-size:.85rem}
+.hero-stats strong{display:block;font-size:1.5rem;font-weight:700;color:#fff;font-family:'Sora',sans-serif}
+
+/* SECTION CHOOSER */
+#chooser{padding:4rem 1rem}
+.section-title{text-align:center;margin-bottom:2.5rem}
+.section-title h2{font-family:'Sora',sans-serif;font-size:1.9rem;font-weight:700;margin-bottom:.5rem}
+.section-title p{color:var(--muted);font-size:.95rem}
+.category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;max-width:900px;margin:auto}
+.cat-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s}
+.cat-card:hover{border-color:var(--green);box-shadow:var(--shadow);transform:translateY(-3px)}
+.cat-icon{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 1rem}
+.cat-grocery .cat-icon{background:#D6F0E2;color:var(--green)}
+.cat-pharmacy .cat-icon{background:#dbeafe;color:#1d4ed8}
+.cat-hardware .cat-icon{background:#fef3c7;color:#92400e}
+.cat-courier .cat-icon{background:#fce7f3;color:#9d174d}
+.cat-card h3{font-family:'Sora',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:.4rem}
+.cat-card p{color:var(--muted);font-size:.82rem;line-height:1.5}
+
+/* CATALOG */
+#catalog{padding:3rem 1rem}
+.catalog-header{max-width:1100px;margin:0 auto 2rem;display:flex;align-items:center;gap:1rem}
+.back-btn{background:none;border:1.5px solid var(--border);border-radius:50px;padding:.4rem 1rem;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted);font-family:inherit;display:flex;align-items:center;gap:6px}
+.back-btn:hover{border-color:var(--green);color:var(--green)}
+.search-bar{flex:1;position:relative}
+.search-bar input{width:100%;padding:.6rem 1rem .6rem 2.5rem;border:1.5px solid var(--border);border-radius:50px;font-size:.9rem;font-family:inherit;background:var(--white)}
+.search-bar input:focus{outline:none;border-color:var(--green)}
+.search-bar i{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--muted)}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1rem;max-width:1100px;margin:auto}
+.product-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;transition:box-shadow .2s}
+.product-card:hover{box-shadow:var(--shadow)}
+.product-img{height:120px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--bg)}
+.product-info{padding:.8rem}
+.product-info h4{font-weight:600;font-size:.9rem;margin-bottom:.25rem;font-family:'Sora',sans-serif}
+.product-info .price{color:var(--green);font-weight:700;font-size:1rem}
+.product-info .unit{color:var(--muted);font-size:.78rem}
+.add-btn{position:absolute;bottom:.8rem;right:.8rem;background:var(--green);color:#fff;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.add-btn:hover{transform:scale(1.1)}
+.qty-ctrl{position:absolute;bottom:.8rem;right:.8rem;display:flex;align-items:center;gap:4px;background:var(--white);border:1.5px solid var(--green);border-radius:50px;padding:2px 6px}
+.qty-ctrl button{background:none;border:none;cursor:pointer;color:var(--green);font-weight:700;font-size:1rem;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.qty-ctrl span{font-size:.85rem;font-weight:600;min-width:16px;text-align:center}
+
+/* FLOATING CART */
+.float-cart{position:fixed;bottom:2rem;right:2rem;background:var(--orange);color:#fff;border:none;border-radius:50px;padding:.8rem 1.5rem;cursor:pointer;font-size:.95rem;font-weight:700;font-family:'Sora',sans-serif;box-shadow:0 4px 20px rgba(245,131,42,.5);display:none;gap:8px;align-items:center;z-index:200;transition:transform .15s}
+.float-cart:hover{transform:scale(1.05)}
+.float-cart .badge{background:#fff;color:var(--orange);border-radius:50%;width:24px;height:24px;font-size:.8rem;display:flex;align-items:center;justify-content:center;font-weight:700}
+
+/* CHECKOUT */
+#checkout{padding:3rem 1rem}
+.checkout-wrap{max-width:700px;margin:auto}
+.checkout-wrap h2{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:1.5rem}
+.order-summary{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.order-summary h3{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)}
+.order-item{display:flex;justify-content:space-between;padding:.5rem 0;font-size:.9rem;border-bottom:1px solid var(--border)}
+.order-item:last-child{border:none}
+.order-total{display:flex;justify-content:space-between;font-weight:700;font-size:1rem;padding-top:.75rem;color:var(--green)}
+.address-form{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.address-form h3{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.05em}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.9rem;font-family:inherit;background:var(--white)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--green)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.payment-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.payment-section h3{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem}
+.payment-tabs{display:flex;gap:.75rem;margin-bottom:1.25rem}
+.pay-tab{flex:1;padding:.75rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;text-align:center;font-size:.88rem;font-weight:600;color:var(--muted);transition:all .15s;background:var(--bg)}
+.pay-tab.active{border-color:var(--green);color:var(--green);background:var(--green-light)}
+.pay-tab i{display:block;font-size:1.5rem;margin-bottom:.3rem}
+.pay-content{display:none}
+.pay-content.active{display:block}
+.ecocash-num{font-size:1.1rem;font-weight:700;color:var(--green);background:var(--green-light);padding:.75rem 1rem;border-radius:var(--radius-sm);margin-bottom:1rem;letter-spacing:.1em;text-align:center}
+.upload-area{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:2rem;text-align:center;cursor:pointer;color:var(--muted);font-size:.88rem;transition:border-color .15s}
+.upload-area:hover{border-color:var(--green)}
+.upload-area i{font-size:2rem;color:var(--green);display:block;margin-bottom:.5rem}
+.cod-info{background:var(--orange-light);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1rem;font-size:.88rem}
+.cod-info strong{color:var(--orange)}
+.change-display{background:var(--green-light);border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:.9rem;font-weight:600;color:var(--green);text-align:center;margin-top:.75rem;display:none}
+.place-order-btn{width:100%;padding:1rem;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-size:1rem;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;transition:transform .15s}
+.place-order-btn:hover{transform:translateY(-1px)}
+
+/* COURIER */
+#courier{padding:3rem 1rem}
+.courier-wrap{max-width:700px;margin:auto}
+.courier-wrap h2{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:.5rem}
+.courier-wrap>p{color:var(--muted);margin-bottom:2rem;font-size:.92rem}
+.step-indicator{display:flex;align-items:center;margin-bottom:2rem}
+.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;border:2px solid var(--border);color:var(--muted);background:var(--white);flex-shrink:0}
+.step-dot.active{border-color:var(--green);color:var(--green)}
+.step-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.step-line{flex:1;height:2px;background:var(--border);margin:0 .5rem}
+.step-line.done{background:var(--green)}
+.courier-step{display:none}
+.courier-step.active{display:block}
+.map-mock{height:280px;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:var(--radius);position:relative;overflow:hidden;margin-bottom:1rem;border:1px solid var(--border)}
+.map-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem}
+.map-pin{font-size:3rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));cursor:pointer;animation:bounce .6s ease infinite alternate}
+@keyframes bounce{to{transform:translateY(-8px)}}
+.map-streets{position:absolute;inset:0;opacity:.15;background:repeating-linear-gradient(0deg,#000 0,#000 1px,transparent 1px,transparent 40px),repeating-linear-gradient(90deg,#000 0,#000 1px,transparent 1px,transparent 40px)}
+.confirm-loc-btn{width:100%;padding:.85rem;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-size:.95rem;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;margin-bottom:1rem}
+.location-confirmed{background:var(--green-light);border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:.88rem;color:var(--green);font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+
+/* TRACKING */
+#tracking{padding:3rem 1rem}
+.tracking-wrap{max-width:600px;margin:auto}
+.tracking-wrap h2{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:.5rem}
+.tracking-wrap>p{color:var(--muted);font-size:.92rem;margin-bottom:2rem}
+.order-id-box{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}
+.order-id-box strong{font-family:'Sora',sans-serif}
+.order-id-box span{color:var(--green);font-weight:700;font-size:1.1rem}
+.track-status{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.track-step{display:flex;gap:1rem;padding:.6rem 0;position:relative}
+.track-step:not(:last-child)::after{content:'';position:absolute;left:15px;top:40px;width:2px;height:calc(100% - 8px);background:var(--border)}
+.track-step.done::after{background:var(--green)}
+.track-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;border:2px solid var(--border);color:var(--muted);background:var(--white)}
+.track-step.done .track-icon{background:var(--green);border-color:var(--green);color:#fff}
+.track-step.active .track-icon{border-color:var(--orange);color:var(--orange)}
+.track-info h4{font-weight:600;font-size:.9rem;margin-bottom:.15rem}
+.track-info p{color:var(--muted);font-size:.8rem}
+.track-map{height:220px;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:var(--radius);position:relative;overflow:hidden;margin-bottom:1.5rem;border:1px solid var(--border)}
+.rider-dot{width:20px;height:20px;background:var(--orange);border-radius:50%;position:absolute;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2);animation:riderMove 4s ease-in-out infinite}
+@keyframes riderMove{0%{left:10%;top:60%}50%{left:55%;top:35%}100%{left:80%;top:55%}}
+.notify-box{background:var(--green-light);border-radius:var(--radius);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start}
+.notify-box i{color:var(--green);font-size:1.3rem;margin-top:.1rem}
+.notify-box h4{font-weight:700;font-size:.9rem;font-family:'Sora',sans-serif;margin-bottom:.25rem}
+.notify-box p{font-size:.82rem;color:#1a5c36}
+
+/* Ecocash upload preview */
+.upload-preview{display:none;background:var(--green-light);border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:.88rem;color:var(--green);margin-top:.75rem;align-items:center;gap:.5rem}
+.upload-preview i{font-size:1.1rem}
+
+/* MINI CART PANEL */
+.cart-panel{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:2px solid var(--border);padding:1rem 1.5rem;z-index:150;transform:translateY(100%);transition:transform .3s;display:flex;align-items:center;justify-content:space-between}
+.cart-panel.visible{transform:translateY(0)}
+.cart-panel-left h4{font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700}
+.cart-panel-left p{color:var(--muted);font-size:.8rem}
+.cart-panel-btn{background:var(--orange);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:50px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* SUCCESS */
+.success-screen{text-align:center;padding:4rem 2rem;max-width:500px;margin:auto}
+.success-icon{width:80px;height:80px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:var(--green);margin:0 auto 1.5rem}
+.success-screen h2{font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:.75rem}
+.success-screen p{color:var(--muted);font-size:.95rem;line-height:1.6;margin-bottom:2rem}
+
+/* UTIL */
+.green-btn{background:var(--green);color:#fff;border:none;padding:.75rem 1.75rem;border-radius:var(--radius);font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif}
+.green-btn:hover{background:#15643e}
+.pill{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;border-radius:50px;font-size:.75rem;font-weight:600}
+.pill-orange{background:var(--orange-light);color:var(--orange)}
+
+@media(max-width:600px){
+  nav{padding:0 1rem}
+  .form-row{grid-template-columns:1fr}
+  .hero-stats{gap:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">Smart<span>Beit</span></div>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showScreen('home')">Home</a></li>
+      <li><a href="#" onclick="showScreen('chooser')">Order</a></li>
+      <li><a href="#" onclick="showScreen('tracking')">Track</a></li>
+    </ul>
+    <button class="nav-btn" onclick="showScreen('chooser')">Order Now</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="home" class="screen active">
+  <div class="hero-badge">🇿🇼 Serving Beitbridge & Surrounding Areas</div>
+  <h1>Everything You Need,<br><span>Delivered to You</span></h1>
+  <p>Grocery, pharmacy, hardware and document courier — all in one app. Fast, reliable delivery right to your door.</p>
+  <button class="hero-btn" onclick="showScreen('chooser')">Order Now &rarr;</button>
+  <div class="hero-stats">
+    <div><strong>30min</strong> Average delivery</div>
+    <div><strong>500+</strong> Products</div>
+    <div><strong>EcoCash</strong> & Cash accepted</div>
+  </div>
+</div>
+
+<!-- CATEGORY CHOOSER -->
+<div id="chooser" class="screen">
+  <div class="section-title">
+    <h2>What do you need today?</h2>
+    <p>Select a category to browse products or services</p>
+  </div>
+  <div class="category-grid">
+    <div class="cat-card cat-grocery" onclick="openCatalog('grocery')">
+      <div class="cat-icon">🛒</div>
+      <h3>Grocery</h3>
+      <p>Fresh produce, pantry staples, snacks & drinks delivered fast</p>
+    </div>
+    <div class="cat-card cat-pharmacy" onclick="openCatalog('pharmacy')">
+      <div class="cat-icon">💊</div>
+      <h3>Pharmacy</h3>
+      <p>Medicines, health products & personal care items</p>
+    </div>
+    <div class="cat-card cat-hardware" onclick="openCatalog('hardware')">
+      <div class="cat-icon">🔧</div>
+      <h3>Hardware</h3>
+      <p>Tools, building materials & home improvement supplies</p>
+    </div>
+    <div class="cat-card cat-courier" onclick="showScreen('courier')">
+      <div class="cat-icon">📦</div>
+      <h3>Document Courier</h3>
+      <p>Secure pickup & drop-off for important documents & parcels</p>
+    </div>
+  </div>
+</div>
+
+<!-- CATALOG -->
+<div id="catalog" class="screen">
+  <div class="catalog-header">
+    <button class="back-btn" onclick="showScreen('chooser')"><i class="fa fa-arrow-left"></i> Back</button>
+    <div class="search-bar">
+      <i class="fa fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search products..." oninput="filterProducts()">
+    </div>
+  </div>
+  <div id="catalogTitle" style="max-width:1100px;margin:0 auto 1.5rem;font-family:'Sora',sans-serif;font-weight:700;font-size:1.3rem"></div>
+  <div class="product-grid" id="productGrid"></div>
+</div>
+
+<!-- FLOAT CART -->
+<button class="float-cart" id="floatCart" onclick="showScreen('checkout')">
+  <i class="fa fa-shopping-cart"></i>
+  View Cart
+  <span class="badge" id="floatCount">0</span>
+</button>
+
+<!-- CART PANEL -->
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-panel-left">
+    <h4 id="panelCount">0 items in cart</h4>
+    <p id="panelTotal">Total: $0.00</p>
+  </div>
+  <button class="cart-panel-btn" onclick="showScreen('checkout')">Go to Checkout →</button>
+</div>
+
+<!-- CHECKOUT -->
+<div id="checkout" class="screen">
+  <div class="checkout-wrap">
+    <button class="back-btn" style="margin-bottom:1.5rem" onclick="goBackFromCheckout()"><i class="fa fa-arrow-left"></i> Back</button>
+    <h2>Checkout</h2>
+    <div class="order-summary">
+      <h3>Order Summary</h3>
+      <div id="orderItems"></div>
+      <div class="order-total">
+        <span>Total</span>
+        <span id="orderTotal">$0.00</span>
+      </div>
+    </div>
+    <div class="address-form">
+      <h3>Delivery Address</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" placeholder="Your name" id="delName">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" placeholder="+263 7XX XXX XXX" id="delPhone">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Street Address</label>
+        <input type="text" placeholder="House/Stand No., Street" id="delAddr">
+      </div>
+      <div class="form-group">
+        <label>Suburb / Area</label>
+        <input type="text" placeholder="e.g. Dulibadzimu" id="delArea">
+      </div>
+    </div>
+    <div class="payment-section">
+      <h3>Payment Method</h3>
+      <div class="payment-tabs">
+        <div class="pay-tab active" onclick="setPayTab('ecocash',this)">
+          <i class="fa fa-mobile-alt"></i> EcoCash
+        </div>
+        <div class="pay-tab" onclick="setPayTab('cod',this)">
+          <i class="fa fa-money-bill-wave"></i> Cash on Delivery
+        </div>
+      </div>
+      <!-- ECOCASH -->
+      <div class="pay-content active" id="pay-ecocash">
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem">Send payment to the EcoCash number below, then upload your confirmation screenshot.</p>
+        <div class="ecocash-num"><i class="fa fa-phone" style="margin-right:.5rem"></i>0771 234 567 — SmartBeit Deliveries</div>
+        <div class="form-group">
+          <label>Amount to Send</label>
+          <input type="text" id="ecoAmount" placeholder="Amount in USD" readonly>
+        </div>
+        <div class="upload-area" onclick="triggerUpload()">
+          <i class="fa fa-cloud-upload-alt"></i>
+          Tap to upload EcoCash confirmation screenshot
+          <br><small style="color:var(--muted)">JPG, PNG or PDF accepted</small>
+        </div>
+        <input type="file" id="fileInput" accept="image/*,application/pdf" style="display:none" onchange="handleUpload(this)">
+        <div class="upload-preview" id="uploadPreview">
+          <i class="fa fa-check-circle"></i>
+          <span id="uploadName">Screenshot uploaded</span>
+        </div>
+      </div>
+      <!-- CASH ON DELIVERY -->
+      <div class="pay-content" id="pay-cod">
+        <div class="cod-info">
+          <strong>Cash on Delivery:</strong> Our rider will collect payment when your order arrives. Please have the exact amount or note change below.
+        </div>
+        <div class="form-group">
+          <label>Order Total</label>
+          <input type="text" id="codTotal" readonly>
+        </div>
+        <div class="form-group">
+          <label>Amount You Will Give</label>
+          <input type="number" id="codAmount" placeholder="e.g. 10.00" step="0.01" min="0" oninput="calcChange()">
+        </div>
+        <div class="change-display" id="changeDisplay"></div>
+      </div>
+    </div>
+    <button class="place-order-btn" onclick="placeOrder()">
+      <i class="fa fa-check-circle"></i> Confirm & Place Order
+    </button>
+  </div>
+</div>
+
+<!-- COURIER -->
+<div id="courier" class="screen">
+  <div class="courier-wrap">
+    <button class="back-btn" style="margin-bottom:1.5rem" onclick="showScreen('chooser')"><i class="fa fa-arrow-left"></i> Back</button>
+    <h2>Document Courier</h2>
+    <p>Secure pickup and drop-off for your documents and parcels anywhere in Beitbridge.</p>
+    <div class="step-indicator">
+      <div class="step-dot active" id="cstep1">1</div>
+      <div class="step-line" id="cline1"></div>
+      <div class="step-dot" id="cstep2">2</div>
+      <div class="step-line" id="cline2"></div>
+      <div class="step-dot" id="cstep3">3</div>
+      <div class="step-line" id="cline3"></div>
+      <div class="step-dot" id="cstep4">4</div>
+    </div>
+
+    <!-- Step 1: Pickup -->
+    <div class="courier-step active" id="cs1">
+      <h3 style="font-family:'Sora',sans-serif;font-weight:700;margin-bottom:.5rem">📍 Select Pickup Point</h3>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Tap on the map or enter the address below</p>
+      <div class="map-mock">
+        <div class="map-streets"></div>
+        <div class="map-overlay">
+          <div class="map-pin" id="pickupPin">📍</div>
+          <div style="background:rgba(255,255,255,.9);padding:.4rem .9rem;border-radius:50px;font-size:.82rem;font-weight:600;color:#1a5c36">Tap pin to set pickup location</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Pickup Address</label>
+        <input type="text" id="pickupAddr" placeholder="e.g. 45 Beit Street, Beitbridge" value="45 Beit Street, Town Centre, Beitbridge">
+      </div>
+      <div class="form-group">
+        <label>Contact at Pickup</label>
+        <input type="text" id="pickupContact" placeholder="Name & phone of person handing over" value="John Moyo – 0771 000 001">
+      </div>
+      <div class="form-group">
+        <label>What are you sending?</label>
+        <input type="text" id="itemDesc" placeholder="e.g. Legal documents, ID copy, parcel" value="Legal documents">
+      </div>
+      <button class="confirm-loc-btn" onclick="confirmPickup()">Confirm Pickup Location</button>
+    </div>
+
+    <!-- Step 2: Drop-off -->
+    <div class="courier-step" id="cs2">
+      <div class="location-confirmed"><i class="fa fa-check-circle"></i> Pickup confirmed: <span id="pickupConfirmed"></span></div>
+      <h3 style="font-family:'Sora',sans-serif;font-weight:700;margin-bottom:.5rem">🏁 Select Drop-Off Point</h3>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Where should the document be delivered?</p>
+      <div class="map-mock">
+        <div class="map-streets"></div>
+        <div class="map-overlay">
+          <div class="map-pin" style="animation-delay:.3s">🏁</div>
+          <div style="background:rgba(255,255,255,.9);padding:.4rem .9rem;border-radius:50px;font-size:.82rem;font-weight:600;color:#9d174d">Tap pin to set drop-off location</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Drop-off Address</label>
+        <input type="text" id="dropoffAddr" placeholder="e.g. ZIMRA Offices, Limpopo Drive" value="ZIMRA Offices, Limpopo Drive, Beitbridge">
+      </div>
+      <div class="form-group">
+        <label>Recipient Name & Phone</label>
+        <input type="text" id="dropoffContact" placeholder="Name & phone of recipient" value="Sarah Ncube – 0771 000 099">
+      </div>
+      <button class="confirm-loc-btn" onclick="confirmDropoff()">Confirm Drop-Off Location</button>
+    </div>
+
+    <!-- Step 3: Review & Pay -->
+    <div class="courier-step" id="cs3">
+      <div class="location-confirmed"><i class="fa fa-check-circle"></i> Drop-off confirmed: <span id="dropoffConfirmed"></span></div>
+      <h3 style="font-family:'Sora',sans-serif;font-weight:700;margin-bottom:1rem">📋 Booking Summary</h3>
+      <div class="order-summary" style="margin-bottom:1.5rem">
+        <h3>Courier Details</h3>
+        <div class="order-item"><span>Pickup</span><span id="sumPickup" style="text-align:right;max-width:60%;font-size:.82rem"></span></div>
+        <div class="order-item"><span>Drop-off</span><span id="sumDropoff" style="text-align:right;max-width:60%;font-size:.82rem"></span></div>
+        <div class="order-item"><span>Item</span><span id="sumItem"></span></div>
+        <div class="order-item"><span>Courier Fee</span><span style="color:var(--green);font-weight:700">$3.50</span></div>
+      </div>
+      <div class="payment-section">
+        <h3>Payment Method</h3>
+        <div class="payment-tabs">
+          <div class="pay-tab active" onclick="setPayTab2('ecocash2',this)"><i class="fa fa-mobile-alt"></i> EcoCash</div>
+          <div class="pay-tab" onclick="setPayTab2('cod2',this)"><i class="fa fa-money-bill-wave"></i> Cash on Delivery</div>
+        </div>
+        <div class="pay-content active" id="pay-ecocash2">
+          <div class="ecocash-num"><i class="fa fa-phone" style="margin-right:.5rem"></i>0771 234 567 — SmartBeit</div>
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:.75rem">Send <strong>$3.50</strong> and upload confirmation below.</p>
+          <div class="upload-area" onclick="triggerUpload2()">
+            <i class="fa fa-cloud-upload-alt"></i>
+            Upload EcoCash confirmation
+          </div>
+          <input type="file" id="fileInput2" accept="image/*" style="display:none" onchange="handleUpload2(this)">
+          <div class="upload-preview" id="uploadPreview2"><i class="fa fa-check-circle"></i><span id="uploadName2"></span></div>
+        </div>
+        <div class="pay-content" id="pay-cod2">
+          <div class="cod-info"><strong>Cash on Pickup:</strong> Our rider will collect $3.50 when they pick up the document.</div>
+        </div>
+      </div>
+      <button class="confirm-loc-btn" onclick="confirmCourier()">Confirm Booking</button>
+    </div>
+
+    <!-- Step 4: Searching -->
+    <div class="courier-step" id="cs4">
+      <div style="text-align:center;padding:2rem 0">
+        <div style="font-size:3rem;margin-bottom:1rem;animation:bounce .7s ease infinite alternate">🛵</div>
+        <h3 style="font-family:'Sora',sans-serif;font-size:1.2rem;margin-bottom:.5rem">Finding your courier rider...</h3>
+        <p style="color:var(--muted);font-size:.88rem;margin-bottom:2rem">Please wait while we match you with a nearby rider</p>
+        <div style="background:var(--bg);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem;font-size:.88rem;color:var(--muted)" id="courierRiderBox">Searching nearby riders...</div>
+        <button class="green-btn" onclick="showCourierTracking()">Track Courier Live →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKING -->
+<div id="tracking" class="screen">
+  <div class="tracking-wrap">
+    <button class="back-btn" style="margin-bottom:1.5rem" onclick="goToHome()"><i class="fa fa-arrow-left"></i> Back to Home</button>
+    <h2>Live Order Tracking</h2>
+    <p>Your order is on its way! Track your rider in real time.</p>
+    <div class="order-id-box">
+      <div><strong>Order ID</strong><br><small style="color:var(--muted)" id="trackOrderType">SmartBeit Order</small></div>
+      <span id="trackOrderId">#SB-001</span>
+    </div>
+    <div class="track-map" id="trackMap">
+      <div class="map-streets"></div>
+      <div class="rider-dot" id="riderDot"></div>
+      <div style="position:absolute;bottom:10px;right:10px;background:rgba(255,255,255,.9);padding:.3rem .7rem;border-radius:50px;font-size:.78rem;font-weight:600;color:#1a5c36">🛵 Rider on the way</div>
+    </div>
+    <div class="track-status" id="trackStatus"></div>
+    <div class="notify-box">
+      <i class="fa fa-bell"></i>
+      <div>
+        <h4>Notifications Enabled</h4>
+        <p id="notifyPhone">You will receive SMS updates on your phone as your order progresses.</p>
+      </div>
+    </div>
+    <div style="margin-top:1.5rem;text-align:center">
+      <button class="green-btn" onclick="showScreen('home');resetAll()">Done – Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentCatalog='',cart={},orderTotal=0,courierStep=1,lastScreen='chooser',isCourier=false;
+
+const products={
+  grocery:[
+    {id:'g1',name:'Mealie Meal 10kg',price:6.50,emoji:'🌽',unit:'bag'},
+    {id:'g2',name:'Rice 5kg',price:5.00,emoji:'🍚',unit:'bag'},
+    {id:'g3',name:'Cooking Oil 2L',price:3.80,emoji:'🫙',unit:'bottle'},
+    {id:'g4',name:'Sugar 2kg',price:2.50,emoji:'🍬',unit:'pack'},
+    {id:'g5',name:'Fresh Tomatoes',price:1.00,emoji:'🍅',unit:'kg'},
+    {id:'g6',name:'Onions',price:0.80,emoji:'🧅',unit:'kg'},
+    {id:'g7',name:'Potatoes 3kg',price:2.20,emoji:'🥔',unit:'bag'},
+    {id:'g8',name:'Bread Loaf',price:1.50,emoji:'🍞',unit:'loaf'},
+    {id:'g9',name:'Milk 1L',price:1.20,emoji:'🥛',unit:'litre'},
+    {id:'g10',name:'Eggs (30 pack)',price:4.50,emoji:'🥚',unit:'tray'},
+    {id:'g11',name:'Chicken Pieces 1kg',price:4.00,emoji:'🍗',unit:'kg'},
+    {id:'g12',name:'Soft Drink 2L',price:2.00,emoji:'🥤',unit:'bottle'},
+  ],
+  pharmacy:[
+    {id:'p1',name:'Paracetamol 500mg',price:1.50,emoji:'💊',unit:'strip'},
+    {id:'p2',name:'Amoxicillin 250mg',price:3.20,emoji:'💉',unit:'pack'},
+    {id:'p3',name:'Oral Rehydration Salts',price:0.80,emoji:'🧃',unit:'sachet'},
+    {id:'p4',name:'Ibuprofen 400mg',price:1.80,emoji:'💊',unit:'strip'},
+    {id:'p5',name:'Hand Sanitiser 500ml',price:2.50,emoji:'🧴',unit:'bottle'},
+    {id:'p6',name:'Face Masks (10 pack)',price:2.00,emoji:'😷',unit:'pack'},
+    {id:'p7',name:'Vitamin C 1000mg',price:3.50,emoji:'🍋',unit:'pack'},
+    {id:'p8',name:'Blood Pressure Monitor',price:18.00,emoji:'❤️',unit:'device'},
+    {id:'p9',name:'Bandages Roll',price:1.20,emoji:'🩹',unit:'roll'},
+    {id:'p10',name:'Antiseptic Cream',price:2.80,emoji:'🧫',unit:'tube'},
+  ],
+  hardware:[
+    {id:'h1',name:'Cement 50kg',price:12.00,emoji:'🏗️',unit:'bag'},
+    {id:'h2',name:'Sand (per load)',price:25.00,emoji:'⛱️',unit:'load'},
+    {id:'h3',name:'Hammer',price:4.50,emoji:'🔨',unit:'piece'},
+    {id:'h4',name:'Nails 1kg Assorted',price:2.00,emoji:'🔩',unit:'kg'},
+    {id:'h5',name:'Paint 5L (White)',price:15.00,emoji:'🖌️',unit:'tin'},
+    {id:'h6',name:'PVC Pipe 3m',price:6.00,emoji:'🔧',unit:'piece'},
+    {id:'h7',name:'Electrical Wire 10m',price:8.00,emoji:'⚡',unit:'roll'},
+    {id:'h8',name:'Padlock Heavy Duty',price:5.50,emoji:'🔒',unit:'piece'},
+    {id:'h9',name:'Wheelbarrow',price:35.00,emoji:'🛻',unit:'piece'},
+    {id:'h10',name:'Timber Plank 3m',price:7.00,emoji:'🪵',unit:'piece'},
+  ]
+};
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  updateFloatCart();
+}
+
+function openCatalog(type){
+  currentCatalog=type;
+  lastScreen='catalog';
+  const titles={grocery:'🛒 Grocery Products',pharmacy:'💊 Pharmacy Products',hardware:'🔧 Hardware & Tools'};
+  document.getElementById('catalogTitle').textContent=titles[type];
+  document.getElementById('searchInput').value='';
+  renderProducts(products[type]);
+  showScreen('catalog');
+}
+
+function renderProducts(list){
+  const grid=document.getElementById('productGrid');
+  grid.innerHTML=list.map(p=>{
+    const qty=cart[p.id]||0;
+    const ctrl=qty>0
+      ?`<div class="qty-ctrl"><button onclick="changeQty('${p.id}',-1)">−</button><span>${qty}</span><button onclick="changeQty('${p.id}',1)">+</button></div>`
+      :`<button class="add-btn" onclick="addToCart('${p.id}')">+</button>`;
+    return `<div class="product-card" id="card-${p.id}">
+      <div class="product-img">${p.emoji}</div>
+      <div class="product-info">
+        <h4>${p.name}</h4>
+        <div class="price">$${p.price.toFixed(2)}</div>
+        <div class="unit">per ${p.unit}</div>
+      </div>
+      ${ctrl}
+    </div>`;
+  }).join('');
+}
+
+function filterProducts(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const list=products[currentCatalog].filter(p=>p.name.toLowerCase().includes(q));
+  renderProducts(list);
+}
+
+function addToCart(id){
+  cart[id]=(cart[id]||0)+1;
+  refreshCard(id);
+  updateFloatCart();
+  updateCartPanel();
+}
+
+function changeQty(id,delta){
+  cart[id]=(cart[id]||0)+delta;
+  if(cart[id]<=0)delete cart[id];
+  refreshCard(id);
+  updateFloatCart();
+  updateCartPanel();
+}
+
+function refreshCard(id){
+  const all=[...products.grocery,...products.pharmacy,...products.hardware];
+  const p=all.find(x=>x.id===id);
+  if(!p)return;
+  const card=document.getElementById('card-'+id);
+  if(!card)return;
+  const qty=cart[id]||0;
+  const old=card.querySelector('.add-btn,.qty-ctrl');
+  if(old)old.remove();
+  const el=document.createElement('div');
+  if(qty>0){
+    el.className='qty-ctrl';
+    el.innerHTML=`<button onclick="changeQty('${id}',-1)">−</button><span>${qty}</span><button onclick="changeQty('${id}',1)">+</button>`;
+  } else {
+    el.className='add-btn';
+    el.textContent='+';
+    el.onclick=()=>addToCart(id);
+  }
+  card.appendChild(el);
+}
+
+function getCartTotal(){
+  const all=[...products.grocery,...products.pharmacy,...products.hardware];
+  let t=0;
+  for(const id in cart){const p=all.find(x=>x.id===id);if(p)t+=p.price*cart[id];}
+  return t;
+}
+
+function getCartCount(){return Object.values(cart).reduce((a,b)=>a+b,0);}
+
+function updateFloatCart(){
+  const fc=document.getElementById('floatCart');
+  const cnt=getCartCount();
+  if(cnt>0&&(document.getElementById('catalog').classList.contains('active'))){
+    fc.style.display='flex';
+    document.getElementById('floatCount').textContent=cnt;
+  } else {
+    fc.style.display='none';
+  }
+}
+
+function updateCartPanel(){
+  const cnt=getCartCount();
+  const total=getCartTotal();
+  const panel=document.getElementById('cartPanel');
+  if(cnt>0&&document.getElementById('catalog').classList.contains('active')){
+    panel.classList.add('visible');
+    document.getElementById('panelCount').textContent=cnt+' item'+(cnt>1?'s':'')+' in cart';
+    document.getElementById('panelTotal').textContent='Total: $'+total.toFixed(2);
+  } else {
+    panel.classList.remove('visible');
+  }
+}
+
+function goBackFromCheckout(){
+  if(isCourier){showScreen('courier');}
+  else{showScreen('catalog');}
+}
+
+function showScreen_checkout(){
+  isCourier=false;
+  buildCheckout();
+  showScreen('checkout');
+}
+
+function buildCheckout(){
+  const all=[...products.grocery,...products.pharmacy,...products.hardware];
+  let html='',total=0;
+  for(const id in cart){
+    const p=all.find(x=>x.id===id);
+    if(!p)continue;
+    const sub=p.price*cart[id];
+    total+=sub;
+    html+=`<div class="order-item"><span>${p.name} × ${cart[id]}</span><span>$${sub.toFixed(2)}</span></div>`;
+  }
+  document.getElementById('orderItems').innerHTML=html;
+  document.getElementById('orderTotal').textContent='$'+total.toFixed(2);
+  document.getElementById('ecoAmount').value='$'+total.toFixed(2);
+  document.getElementById('codTotal').value='$'+total.toFixed(2);
+  orderTotal=total;
+  document.getElementById('cartPanel').classList.remove('visible');
+}
+
+// Override checkout from catalog
+document.addEventListener('click',e=>{
+  if(e.target.closest('.cart-panel-btn')||e.target.closest('#floatCart')){
+    showScreen_checkout();
+  }
+});
+
+function setPayTab(id,el){
+  document.querySelectorAll('.pay-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.pay-content').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pay-'+id).classList.add('active');
+}
+function setPayTab2(id,el){
+  document.querySelectorAll('#cs3 .pay-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#cs3 .pay-content').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pay-'+id).classList.add('active');
+}
+
+function calcChange(){
+  const total=orderTotal||3.5;
+  const given=parseFloat(document.getElementById('codAmount').value)||0;
+  const d=document.getElementById('changeDisplay');
+  if(given<=0){d.style.display='none';return;}
+  if(given<total){d.style.display='block';d.style.background='#fef2f2';d.style.color='#b91c1c';d.textContent='⚠ Amount given is less than total by $'+(total-given).toFixed(2);}
+  else{d.style.display='block';d.style.background='var(--green-light)';d.style.color='var(--green)';d.textContent='✓ Change to give back: $'+(given-total).toFixed(2);}
+}
+
+function triggerUpload(){document.getElementById('fileInput').click();}
+function triggerUpload2(){document.getElementById('fileInput2').click();}
+function handleUpload(inp){
+  if(inp.files[0]){
+    const p=document.getElementById('uploadPreview');
+    document.getElementById('uploadName').textContent=inp.files[0].name;
+    p.style.display='flex';
+  }
+}
+function handleUpload2(inp){
+  if(inp.files[0]){
+    const p=document.getElementById('uploadPreview2');
+    document.getElementById('uploadName2').textContent=inp.files[0].name;
+    p.style.display='flex';
+  }
+}
+
+function placeOrder(){
+  const name=document.getElementById('delName').value.trim();
+  const phone=document.getElementById('delPhone').value.trim();
+  const addr=document.getElementById('delAddr').value.trim();
+  if(!name||!phone||!addr){alert('Please fill in your delivery address details.');return;}
+  const orderId='#SB-'+Math.floor(1000+Math.random()*9000);
+  setupTracking(orderId,'SmartBeit Delivery',phone,false);
+  cart={};
+  showScreen('tracking');
+}
+
+// COURIER
+function setCourierStep(n){
+  for(let i=1;i<=4;i++){
+    document.getElementById('cs'+i).classList.remove('active');
+    document.getElementById('cstep'+i).classList.remove('active','done');
+    if(i<4)document.getElementById('cline'+i).classList.remove('done');
+  }
+  document.getElementById('cs'+n).classList.add('active');
+  for(let i=1;i<n;i++){
+    document.getElementById('cstep'+i).classList.add('done');
+    document.getElementById('cstep'+i).textContent='✓';
+    if(i<4)document.getElementById('cline'+i).classList.add('done');
+  }
+  document.getElementById('cstep'+n).classList.add('active');
+  courierStep=n;
+  window.scrollTo(0,0);
+}
+
+function confirmPickup(){
+  const addr=document.getElementById('pickupAddr').value.trim();
+  if(!addr){alert('Please enter a pickup address');return;}
+  document.getElementById('pickupConfirmed').textContent=addr;
+  document.getElementById('sumPickup').textContent=addr+' — '+document.getElementById('pickupContact').value;
+  setCourierStep(2);
+}
+
+function confirmDropoff(){
+  const addr=document.getElementById('dropoffAddr').value.trim();
+  if(!addr){alert('Please enter a drop-off address');return;}
+  document.getElementById('dropoffConfirmed').textContent=addr;
+  document.getElementById('sumDropoff').textContent=addr+' — '+document.getElementById('dropoffContact').value;
+  document.getElementById('sumItem').textContent=document.getElementById('itemDesc').value;
+  setCourierStep(3);
+}
+
+function confirmCourier(){
+  setCourierStep(4);
+  setTimeout(()=>{
+    document.getElementById('courierRiderBox').innerHTML='🛵 <strong>Rider found!</strong> Thabo M. is on his way to pickup your document. ETA: 12 minutes.';
+  },2500);
+}
+
+function showCourierTracking(){
+  const orderId='#SC-'+Math.floor(1000+Math.random()*9000);
+  const phone=document.getElementById('dropoffContact').value||'+263 7XX XXX XXX';
+  setupTracking(orderId,'Document Courier',phone,true);
+  showScreen('tracking');
+}
+
+function setupTracking(orderId,type,phone,isCourierOrder){
+  document.getElementById('trackOrderId').textContent=orderId;
+  document.getElementById('trackOrderType').textContent=type;
+  document.getElementById('notifyPhone').textContent='You will receive SMS updates on '+phone+' as your order progresses.';
+  const steps=isCourierOrder
+    ?[
+      {label:'Booking Confirmed',desc:'Your courier booking is confirmed',done:true},
+      {label:'Rider Dispatched',desc:'Rider heading to pickup location',done:true},
+      {label:'Document Picked Up',desc:'Document collected from pickup point',active:true},
+      {label:'En Route to Drop-off',desc:'Rider heading to destination',done:false},
+      {label:'Delivered',desc:'Document delivered & signed for',done:false},
+    ]
+    :[
+      {label:'Order Confirmed',desc:'We received your order',done:true},
+      {label:'Preparing Order',desc:'Items being packed',done:true},
+      {label:'Rider Assigned',desc:'Rider on the way to collect',active:true},
+      {label:'Out for Delivery',desc:'Rider heading to your address',done:false},
+      {label:'Delivered',desc:'Order delivered to your door',done:false},
+    ];
+  document.getElementById('trackStatus').innerHTML=steps.map((s,i)=>`
+    <div class="track-step ${s.done?'done':''} ${s.active?'active':''}">
+      <div class="track-icon">${s.done?'<i class="fa fa-check"></i>':s.active?'<i class="fa fa-spinner fa-spin"></i>':'<i class="fa fa-circle"></i>'}</div>
+      <div class="track-info">
+        <h4>${s.label}</h4>
+        <p>${s.desc}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function goToHome(){showScreen('home');}
+function resetAll(){cart={};currentCatalog='';courierStep=1;isCourier=false;}
+</script>
+</body>
+</html>
