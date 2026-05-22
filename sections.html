@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>SmartBeit Sections</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'DM Sans',sans-serif;
+background:#F7F9F7;
+overflow-x:hidden;
+}
+
+.header{
+background:#fff;
+padding:1rem;
+text-align:center;
+border-bottom:1px solid #e5e7eb;
+}
+
+.header h1{
+font-family:'Sora',sans-serif;
+color:#1A7A4A;
+}
+
+.header span{
+color:#F5832A;
+}
+
+.slider-container{
+width:100%;
+overflow:hidden;
+position:relative;
+}
+
+.slider{
+display:flex;
+width:400%;
+transition:transform .4s ease;
+}
+
+.slide{
+width:100vw;
+min-height:calc(100vh - 80px);
+padding:2rem 1rem;
+flex-shrink:0;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.card{
+background:#fff;
+border-radius:20px;
+padding:2rem;
+text-align:center;
+max-width:350px;
+width:100%;
+box-shadow:0 4px 18px rgba(0,0,0,.08);
+}
+
+.icon{
+font-size:4rem;
+margin-bottom:1rem;
+}
+
+.card h2{
+font-family:'Sora',sans-serif;
+margin-bottom:.5rem;
+}
+
+.card p{
+color:#6b7280;
+line-height:1.6;
+margin-bottom:1.5rem;
+}
+
+.btn{
+background:#1A7A4A;
+color:#fff;
+border:none;
+padding:.9rem 2rem;
+border-radius:50px;
+font-weight:700;
+cursor:pointer;
+}
+
+.dots{
+display:flex;
+justify-content:center;
+gap:10px;
+margin:1rem 0;
+}
+
+.dot{
+width:12px;
+height:12px;
+border-radius:50%;
+background:#d1d5db;
+transition:.3s;
+cursor:pointer;
+}
+
+.dot.active{
+background:#1A7A4A;
+}
+
+.swipe-text{
+text-align:center;
+color:#6b7280;
+margin-top:1rem;
+font-size:.9rem;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>Smart<span>Beit</span></h1>
+</div>
+
+<div class="swipe-text">
+← Swipe left or right →
+</div>
+
+<div class="slider-container">
+
+<div class="slider" id="slider">
+
+<!-- GROCERY -->
+<div class="slide">
+<div class="card">
+
+<div class="icon">🛒</div>
+
+<h2>Grocery</h2>
+
+<p>
+Fresh produce, pantry staples,
+snacks and drinks delivered fast.
+</p>
+
+<button class="btn">
+Open Grocery
+</button>
+
+</div>
+</div>
+
+<!-- PHARMACY -->
+<div class="slide">
+<div class="card">
+
+<div class="icon">💊</div>
+
+<h2>Pharmacy</h2>
+
+<p>
+Medicines, health products
+and personal care items.
+</p>
+
+<button class="btn">
+Open Pharmacy
+</button>
+
+</div>
+</div>
+
+<!-- HARDWARE -->
+<div class="slide">
+<div class="card">
+
+<div class="icon">🔧</div>
+
+<h2>Hardware</h2>
+
+<p>
+Tools, building materials and
+home improvement supplies.
+</p>
+
+<button class="btn">
+Open Hardware
+</button>
+
+</div>
+</div>
+
+<!-- COURIER -->
+<div class="slide">
+<div class="card">
+
+<div class="icon">📦</div>
+
+<h2>Document Courier</h2>
+
+<p>
+Secure pickup and drop-off
+for documents and parcels.
+</p>
+
+<button class="btn">
+Open Courier
+</button>
+
+</div>
+</div>
+
+</div>
+
+</div>
+
+<div class="dots">
+
+<div class="dot active"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+
+</div>
+
+<script>
+
+const slider =
+document.getElementById('slider');
+
+const dots =
+document.querySelectorAll('.dot');
+
+let currentSlide = 0;
+
+function updateSlider(){
+
+slider.style.transform =
+`translateX(-${currentSlide * 100}vw)`;
+
+dots.forEach(dot=>
+dot.classList.remove('active'));
+
+dots[currentSlide]
+.classList.add('active');
+
+}
+
+dots.forEach((dot,index)=>{
+
+dot.addEventListener('click',()=>{
+
+currentSlide = index;
+
+updateSlider();
+
+});
+
+});
+
+let startX = 0;
+
+slider.addEventListener('touchstart',(e)=>{
+
+startX =
+e.touches[0].clientX;
+
+});
+
+slider.addEventListener('touchend',(e)=>{
+
+let endX =
+e.changedTouches[0].clientX;
+
+if(startX - endX > 50){
+
+if(currentSlide < 3){
+
+currentSlide++;
+
+updateSlider();
+
+}
+
+}
+
+if(endX - startX > 50){
+
+if(currentSlide > 0){
+
+currentSlide--;
+
+updateSlider();
+
+}
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
